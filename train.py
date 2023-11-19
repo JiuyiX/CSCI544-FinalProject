@@ -7,9 +7,6 @@ from tqdm import tqdm
 from transformers import get_linear_schedule_with_warmup
 import config
 from transformers import AutoTokenizer
-import sacrebleu
-from nltk.translate.meteor_score import meteor_score
-from rouge import Rouge
 from inference import BeamSearch
 from torch.utils.data import DataLoader
 from nltk.tokenize import word_tokenize
@@ -113,27 +110,6 @@ def evaluate(model, tokenizer, device, val_dataloader: DataLoader, beam_size=10,
 
     df = pd.DataFrame({'hypothesis':hypotheses, 'references':references})
     df.to_csv('SQuAD_Bart_base_1.csv', index=False)
-
-    bleu = sacrebleu.corpus_bleu(hypotheses, references)
-
-    print(f"Evaluation result: {bleu}")
-    bleu_score = bleu.score
-    print(bleu_score)
-
-    meteor_scores = [meteor_score([word_tokenize(ref[2:-2])], word_tokenize(hyp)) for ref, hyp in zip(references, hypotheses)]
-    # Calculate the average METEOR score for the entire dataset
-    meteor_score1 = float(sum(meteor_scores)) / len(meteor_scores)
-    print(meteor_score1)
-
-    rouge = Rouge()
-    rouge_scores = [rouge.get_scores(hyp, ref) for hyp, ref in zip(hypotheses, references)]
-    # Extract and average the ROUGE-L scores (or ROUGE-1, ROUGE-2 as needed)
-    rouge_score = sum([score[0]['rouge-l']['f'] for score in rouge_scores]) / len(rouge_scores)
-    rouge_score_1 = sum([score[0]['rouge-l']['p'] for score in rouge_scores]) / len(rouge_scores)
-    rouge_score_2 = sum([score[0]['rouge-l']['r'] for score in rouge_scores]) / len(rouge_scores)
-    print(rouge_score)
-    print(rouge_score_1)
-    print(rouge_score_2)
 
 
 
