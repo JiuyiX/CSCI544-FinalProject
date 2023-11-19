@@ -1,0 +1,22 @@
+#!/bin/bash
+
+#SBATCH --account=meidache_1073
+#SBATCH --partition=gpu
+#SBATCH --gres=gpu:a40:1
+#SBATCH --nodes=1
+#SBATCH --ntasks-per-node=1
+#SBATCH --cpus-per-task=9
+#SBATCH --mem=8GB
+#SBATCH --time=8:00:00
+
+conda activate csci544
+
+export TOKENIZERS_PARALLELISM=true
+
+export PYTHONPATH=./
+eval "$(conda shell.bash hook)"
+PYTHON="/home1/jiuyixu/.conda/envs/csci544/bin/python"
+
+RUN_CODE=eval.py
+
+srun $PYTHON $RUN_CODE
